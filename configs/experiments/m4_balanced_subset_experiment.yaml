@@ -1,0 +1,64 @@
+experiment_name: "m4_balanced_subset"
+stage: "publication_subset"
+output_root: "results/m4_balanced_subset_runs"
+
+dataset_manifest: "results/manifests/publication_manifest.csv"
+sampling_mode: "balanced_subset"
+balance_by: "dataset_name"
+max_images_per_group: 800
+sampling_seed: 0
+include_datasets:
+  - "kodak"
+  - "usc_sipi"
+  - "div2k"
+  - "coco_subset"
+
+budget_type: "time"
+budgets:
+  - budget_ratio: 0.05
+  - budget_ratio: 0.1
+  - budget_ratio: 0.2
+  - budget_ratio: 0.3
+  - budget_ratio: 0.5
+
+seeds: [0, 1, 2]
+
+methods:
+  - "no_protection"
+  - "full_aead"
+  - "random_selective"
+  - "rule_based_legacy"
+  - "entropy_texture_selective_external"
+  - "saliency_roi_selective_external"
+  - "proposed_semantic_real_threshold"
+  - "semantic_fallback"
+  - "proposed_semantic_fallback_threshold"
+  - "semantic_real"
+
+require_real_semantic: true
+allow_fallback_as_main: false
+allow_debug_dataset: false
+attack_metrics_enabled: true
+statistical_validation_enabled: true
+config_path: "configs/q2_base.yaml"
+dinov2_readiness_path: "results/readiness/dinov2_ready.json"
+
+policy_overrides:
+  scorer: "rule_based"
+  semantic:
+    semantic_mode: "dinov2"
+    backend: "huggingface"
+    require_real_backend: true
+    fallback_enabled: false
+    model_path: "huggingface/hub/models--facebook--dinov2-small/snapshots/ed25f3a31f01632728cabb09d1542f84ab7b0056"
+    device: "cuda"
+
+selective_metric_config:
+  topk: 5
+  strong_levels: ["high"]
+  protection_weights:
+    high: 1.0
+    medium: 0.6
+    low: 0.3
+    none: 0.0
+  block_size: 16

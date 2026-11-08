@@ -1,0 +1,13 @@
+dataset_name: "validation_real_small"
+split: "validation"
+source: "manual_validation_subset"
+license_note: "user_provided_license"
+
+expected_categories:
+  - kodak
+  - usc_sipi
+  - coco_subset
+  - privacy_subset
+
+dataset_root: "data/validation_real_small"
+output_manifest: "results/manifests/validation_real_small_manifest.csv"

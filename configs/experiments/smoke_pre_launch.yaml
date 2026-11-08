@@ -1,0 +1,54 @@
+# Pre-launch smoke: 12 images (4 datasets x 3 each) on new manifest, single budget, single seed.
+# Goal: confirm m4_final_tifs_paper.yaml configuration is sound before 30240-row full launch.
+
+experiment_name: "smoke_pre_launch"
+stage: "validation"
+output_root: "results/smoke_pre_launch"
+config_path: "configs/q2_base.yaml"
+budget_type: "time"
+
+dataset_manifest: "results/manifests/publication_manifest_paper.csv"
+sampling_mode: "legacy_category_cap"
+sampling_seed: 0
+max_images_per_category: 3
+
+methods:
+  - no_protection
+  - full_aead
+  - rule_based_legacy
+  - random_selective
+  - proposed_semantic_real_threshold
+
+budgets:
+  - budget_ratio: 0.1
+
+seeds:
+  - 0
+
+require_real_semantic: true
+allow_fallback_as_main: false
+allow_debug_dataset: false
+dinov2_readiness_path: "results/readiness/dinov2_ready.json"
+
+policy_overrides:
+  scorer: "rule_based"
+  semantic:
+    semantic_mode: "dinov2"
+    backend: "huggingface"
+    require_real_backend: true
+    fallback_enabled: false
+    model_path: "huggingface/hub/models--facebook--dinov2-small/snapshots/ed25f3a31f01632728cabb09d1542f84ab7b0056"
+    device: "cuda"
+
+selective_metric_config:
+  topk: 5
+  strong_levels: ["high", "medium"]
+  protection_weights:
+    high: 1.0
+    medium: 0.6
+    low: 0.3
+    none: 0.0
+  block_size: 16
+
+attack_metrics_enabled: true
+statistical_validation_enabled: false

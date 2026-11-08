@@ -1,0 +1,138 @@
+# V4 main experiment: external ground truth, real encryption chain, honest timing.
+#
+# Replaces the m4_final_tifs_paper run, whose dependent variables were each
+# method's own risk scores (finding F4), whose protection was a SHA-256 byte
+# proxy rather than the cipher (F2), and whose semantic cost was erased by a
+# predictor cache (F3).
+#
+# What changes here
+#   - dataset_manifest  -> Open Images privacy v1 (2400 images, official V7
+#     boxes, face/plate balanced, image-disjoint frozen split). The historical
+#     2016-image corpus is 89% <= 255x255 with an x8-downsampled DIV2K
+#     (finding M8) and carries no privacy annotations, so it is demoted to a
+#     generalization side experiment.
+#   - external_labels_path -> enables the ext_* columns, which are the paper's
+#     primary dependent variables. Digest-bound to the manifest, so a corpus
+#     mismatch aborts the run instead of producing plausible wrong numbers.
+#   - protection_backend: real_chain -> src.pipeline actually encrypts, and each
+#     row records roundtrip_sad plus a nonzero encryption_time_ms.
+#   - kdf_profile: v2_domain_separated -> closes the recoverable-keystream
+#     defect (F1). Measured cost: the crypto stage rises from ~32 ms to ~136 ms
+#     per image, which the paper must report rather than hide.
+#   - seeds: [0] -> verified from the historical run that only random_selective
+#     varies across seeds; all other methods produced byte-identical level maps
+#     in 10080/10080 groups. Repeating deterministic methods 3x triples compute
+#     and adds no independent samples. random_selective gets its own 3-seed
+#     config (v4_external_truth_random_seeds.yaml).
+#   - topk_mode: ratio -> one top-k definition tied to the budget under
+#     evaluation, replacing the absolute topk=5 (0.33% of a kodak image) that
+#     coexisted with a separate floor(N*budget) definition in the runner (M7).
+#   - protection_weights.low: 0.0 -> `low` applies keystream diffusion without
+#     AEAD, so it is not authenticated protection and is no longer credited.
+#
+# Expected scale: 2400 images x 12 methods x 5 budgets x 1 seed = 144,000 rows.
+
+experiment_name: "v4_traditional_metrics_subsample"
+stage: "subsample"
+output_root: "results/v4_runs"
+
+dataset_manifest: "results/labels/openimages_privacy_external_labels_v2.manifest.csv"
+# 120-image subsample (60 face + 60 plate) for the secondary
+# chaos-era metrics (entropy, NPCR, UACI, PSNR, SSIM, adjacent
+# correlation). These are computed on a ciphertext *projection*
+# and are not a primary dependent variable (plan C6.6).
+sampling_mode: "balanced_subset"
+balance_by: "category"
+max_images_per_group: 60
+sampling_seed: 0
+
+# Digest-bound external ground truth: Open Images V7 official boxes,
+# 7,221,229 blocks, 455,808 sensitive, audited FULL.
+external_labels_path: "results/labels/openimages_privacy_external_labels_v2.json"
+
+budget_type: "time"
+budget_mode: "paper_low_high"
+budgets:
+  - budget_ratio: 0.05
+  - budget_ratio: 0.1
+  - budget_ratio: 0.2
+  - budget_ratio: 0.3
+  - budget_ratio: 0.5
+
+seeds: [0]
+
+# Axis B of the fairness design: every method receives the same declared C_B and
+# spends it under its own level repertoire. Axis A (equal AEAD coverage) runs
+# separately so the two questions stay separated.
+fairness_axis: "equal_declared_cost"
+
+# Real permutation + diffusion + AEAD, measured and round-trip verified.
+protection_backend: "real_chain"
+
+methods:
+  # References
+  - "no_protection"
+  - "full_aead"
+  - "chacha20_full_reference"
+  # Baselines
+  - "random_selective"
+  - "rule_based_legacy"
+  - "entropy_texture_selective_external"
+  - "saliency_roi_selective_external"
+  # Proposed, and its allocator ablation
+  - "proposed_semantic_real_threshold"
+  - "proposed_semantic_real_dp"
+  - "ablation_semantic_real_legacy_allocator"
+  - "proposed_semantic_fallback_threshold"
+  # Upper bound. NOT a deployable method: reads the ground-truth labels.
+  - "external_label_oracle"
+
+require_real_semantic: true
+allow_fallback_as_main: false
+allow_debug_dataset: false
+config_path: "configs/q2_base.yaml"
+dinov2_readiness_path: "results/readiness/dinov2_ready.json"
+
+encryption_overrides:
+  kdf_profile: "v2_domain_separated"
+
+policy_overrides:
+  scorer: "rule_based"
+  semantic:
+    semantic_mode: "dinov2"
+    backend: "huggingface"
+    require_real_backend: true
+    fallback_enabled: false
+    model_path: "huggingface/hub/models--facebook--dinov2-small/snapshots/ed25f3a31f01632728cabb09d1542f84ab7b0056"
+    device: "cuda"
+    # per_block is the frozen default. image_patches is 71-242x faster but its
+    # scores correlate only 0.05-0.16 with per_block (results/probes/
+    # c9_encode_modes.json), so it is a different scorer, not an optimization,
+    # and is evaluated as its own ablation rather than substituted here.
+    semantic_encode_mode: "per_block"
+
+selective_metric_config:
+  topk_mode: "ratio"
+  strong_levels: ["high", "medium"]
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.0
+    none: 0.0
+  block_size: 16
+
+# Secondary chaos-era metrics are computed on a ciphertext *projection*
+# (plan C6.6), cost 428 ms/row of which SSIM is 284 ms, and are not a primary
+# dependent variable. Disabled on the main grid; a declared subsample run
+# (v4_traditional_metrics_subsample.yaml) reports them for the paper.
+# Decryption costs about as much as encryption, so SAD==0 is verified on a
+# deterministic 10% sample of the main grid. Unverified rows record
+# roundtrip_verified = None, never False.
+roundtrip_verify_ratio: 0.1
+traditional_metrics_enabled: true
+# The self-defined attack proxies are not cross-method comparable (F4); real
+# learned attacks come from E2.
+attack_metrics_enabled: false
+statistical_validation_enabled: true
+checkpoint_enabled: true
+checkpoint_every_records: 200

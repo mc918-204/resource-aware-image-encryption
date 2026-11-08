@@ -1,0 +1,8 @@
+dataset_name: debug_train
+dataset_root: data/train
+split: debug
+source: local_repository_debug_dataset
+license_note: local_debug_only_not_for_publication
+is_publication_ready: false
+exclusion_reason: debug_only_small_scale_dataset
+intended_use: smoke_and_pipeline_validation_only

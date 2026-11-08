@@ -1,0 +1,49 @@
+experiment_name: "m3b_validation_real_small"
+stage: "validation"
+output_root: "results/m3_validation_runs"
+config_path: "configs/q2_base.yaml"
+budget_type: "time"
+
+dataset_manifest: "results/manifests/validation_real_small_manifest.csv"
+max_images_per_category: 3
+
+methods:
+  - no_protection
+  - full_aead
+  - random_selective
+  - rule_based_legacy
+  - entropy_texture_selective_external
+  - semantic_fallback
+  - proposed_semantic_fallback_threshold
+  - semantic_real
+  - proposed_semantic_real_threshold
+
+budgets:
+  - budget_ratio: 0.05
+  - budget_ratio: 0.1
+  - budget_ratio: 0.2
+
+seeds:
+  - 0
+  - 1
+
+require_real_semantic: false
+dinov2_model_path: ""
+dinov2_device: "cpu"
+
+selective_metric_config:
+  topk: 5
+  strong_levels:
+    - high
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.2
+    none: 0.0
+
+policy_overrides:
+  semantic:
+    semantic_mode: "fallback"
+    fallback_enabled: true
+    require_real_backend: false
+    calibrate_semantic: false

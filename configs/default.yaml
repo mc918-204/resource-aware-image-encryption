@@ -1,0 +1,36 @@
+app:
+  name: "resource_aware_image_encryption"
+  version: "0.2.0"
+  log_level: "INFO"
+
+image:
+  block_size: 16  # 16x16 pixels
+  channels: 3     # RGB
+
+budget:
+  default_time: 1000.0 # Force trade-off for 256x256 images (256 blocks * 10 cost = 2560 needed for full high)
+
+encryption:
+  master_key: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  levels:
+    high:
+      algorithm: "AES-GCM"
+      chaos_rounds: 2
+    medium:
+      algorithm: "ChaCha20-Poly1305" 
+      chaos_rounds: 1
+    low:
+      algorithm: "None"
+      chaos_rounds: 1 # Changed from 0 to 1 to ensure minimal protection
+
+policy:
+  scorer: "rule_based" # Main method: rule_based (was entropy/variance). Options: rule_based, cnn_classifier, fusion
+  rule_mode: "entropy" # Sub-option for rule_based: entropy, variance, edge
+  thresholds: [0.3, 0.7] # These guide the 'ideal' distribution if budget allows
+  model_path: "results/checkpoints/cnn_classifier_best.pt" # Default path for extension modes
+  fusion_alpha: 0.7 # Default alpha for fusion mode (70% rule, 30% cnn)
+
+chaos:
+  backend: "logistic" # Frozen V1 backend; do not change in place.
+  seed: 0.123 
+  r: 3.99 

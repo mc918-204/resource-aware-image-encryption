@@ -1,0 +1,120 @@
+# V4 axis A: equal coverage on the full 2400-image grid.
+#
+# Why this run exists
+#   The main grid (v4_external_truth_main.yaml) runs axis B only -- every method
+#   receives the same declared cost C_B and spends it under its own level
+#   repertoire. A cell difference there therefore mixes two causes: ranking
+#   quality, and how a scorer's score distribution happens to interact with the
+#   fixed thresholds 0.7/0.4. Section 5.7 conclusion (3) turns on separating
+#   those two, because fallback beats DINOv2 on axis B and loses on axis A.
+#
+#   E7 established that reversal on 150 validation + 150 test images. This run
+#   repeats axis A on the same 2400 images as the main grid so the two axes are
+#   reported at equal sample strength, closing the caveat that the axis A table
+#   rests on 1/16 of the evidence the axis B table does.
+#
+# Axis A semantics: every method sets exactly floor(B*N) blocks to `high` and
+# leaves the rest at `none`. Identical block count, identical cryptographic
+# treatment. The allocator and the cost model are removed from the comparison
+# by construction, so a difference between two rows is a ranking difference and
+# nothing else.
+#
+# Method set: 8 rather than the main grid's 12. On this axis the allocator is
+# ignored, so `proposed_semantic_real_dp` and
+# `ablation_semantic_real_legacy_allocator` would produce byte-identical level
+# maps to `proposed_semantic_real_threshold` -- they differ only in allocator.
+# `full_aead` and `chacha20_full_reference` encrypt the whole image and produce
+# no ranking, so they are constant 1.0 and carry no information here. Dropping
+# the four cuts roughly a third of the compute for zero loss of evidence.
+#
+# Expected scale: 2400 images x 8 methods x 5 budgets x 1 seed = 96,000 rows.
+
+experiment_name: "v4_equal_coverage_axis_a"
+stage: "publication"
+output_root: "results/v4_runs"
+
+dataset_manifest: "results/labels/openimages_privacy_external_labels_v2.manifest.csv"
+sampling_mode: "full_manifest"
+sampling_seed: 0
+
+external_labels_path: "results/labels/openimages_privacy_external_labels_v2.json"
+
+budget_type: "time"
+budget_mode: "paper_low_high"
+budgets:
+  - budget_ratio: 0.05
+  - budget_ratio: 0.1
+  - budget_ratio: 0.2
+  - budget_ratio: 0.3
+  - budget_ratio: 0.5
+
+# Deterministic methods produce identical level maps across seeds; verified on
+# the historical grid over 10080/10080 (image, budget) groups. random_selective
+# is the one exception and has its own multi-seed run on axis B; on axis A its
+# expected recall equals the coverage ratio by construction, so a single seed is
+# sufficient here.
+seeds: [0]
+
+fairness_axis: "equal_coverage"
+
+# The dependent variable (ext_sensitive_block_recall_strong) is a function of
+# levels and mask only, so ciphertext content cannot affect it. The real chain
+# is kept anyway: it keeps encryption_time_ms nonzero and roundtrip_sad
+# populated, so this run satisfies the same acceptance criteria as the main grid
+# and stays directly comparable to it rather than being a second class of
+# evidence.
+protection_backend: "real_chain"
+
+methods:
+  # Floor reference: no ranking, no protection.
+  - "no_protection"
+  # Proposed scorers.
+  - "proposed_semantic_real_threshold"
+  - "proposed_semantic_fallback_threshold"
+  # Baselines that do not share the proposed risk definition.
+  - "rule_based_legacy"
+  - "entropy_texture_selective_external"
+  - "saliency_roi_selective_external"
+  - "random_selective"
+  # Upper bound. NOT deployable: reads the ground-truth labels.
+  - "external_label_oracle"
+
+require_real_semantic: true
+allow_fallback_as_main: false
+allow_debug_dataset: false
+config_path: "configs/q2_base.yaml"
+dinov2_readiness_path: "results/readiness/dinov2_ready.json"
+
+encryption_overrides:
+  kdf_profile: "v2_domain_separated"
+
+policy_overrides:
+  scorer: "rule_based"
+  semantic:
+    semantic_mode: "dinov2"
+    backend: "huggingface"
+    require_real_backend: true
+    fallback_enabled: false
+    model_path: "huggingface/hub/models--facebook--dinov2-small/snapshots/ed25f3a31f01632728cabb09d1542f84ab7b0056"
+    device: "cuda"
+    # Frozen to per_block to match both the main grid and E7's axis A table.
+    # image_patches correlates 0.05-0.16 with per_block, so it is a different
+    # scorer rather than an optimization and is evaluated separately.
+    semantic_encode_mode: "per_block"
+
+selective_metric_config:
+  topk_mode: "ratio"
+  strong_levels: ["high", "medium"]
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.0
+    none: 0.0
+  block_size: 16
+
+roundtrip_verify_ratio: 0.1
+traditional_metrics_enabled: false
+attack_metrics_enabled: false
+statistical_validation_enabled: true
+checkpoint_enabled: true
+checkpoint_every_records: 200

@@ -1,0 +1,60 @@
+experiment_name: v4_axis_a_smoke
+stage: publication
+output_root: results/v4_runs
+dataset_manifest: results/labels/openimages_privacy_external_labels_v2.manifest.csv
+sampling_mode: balanced_subset
+sampling_seed: 0
+external_labels_path: results/labels/openimages_privacy_external_labels_v2.json
+budget_type: time
+budget_mode: paper_low_high
+budgets:
+- budget_ratio: 0.05
+- budget_ratio: 0.5
+seeds:
+- 0
+fairness_axis: equal_coverage
+protection_backend: real_chain
+methods:
+- no_protection
+- proposed_semantic_real_threshold
+- proposed_semantic_fallback_threshold
+- rule_based_legacy
+- entropy_texture_selective_external
+- saliency_roi_selective_external
+- random_selective
+- external_label_oracle
+require_real_semantic: true
+allow_fallback_as_main: false
+allow_debug_dataset: false
+config_path: configs/q2_base.yaml
+dinov2_readiness_path: results/readiness/dinov2_ready.json
+encryption_overrides:
+  kdf_profile: v2_domain_separated
+policy_overrides:
+  scorer: rule_based
+  semantic:
+    semantic_mode: dinov2
+    backend: huggingface
+    require_real_backend: true
+    fallback_enabled: false
+    model_path: huggingface/hub/models--facebook--dinov2-small/snapshots/ed25f3a31f01632728cabb09d1542f84ab7b0056
+    device: cuda
+    semantic_encode_mode: per_block
+selective_metric_config:
+  topk_mode: ratio
+  strong_levels:
+  - high
+  - medium
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.0
+    none: 0.0
+  block_size: 16
+roundtrip_verify_ratio: 1.0
+traditional_metrics_enabled: false
+attack_metrics_enabled: false
+statistical_validation_enabled: true
+checkpoint_enabled: true
+checkpoint_every_records: 200
+max_images_per_group: 1

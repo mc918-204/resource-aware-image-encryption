@@ -1,0 +1,50 @@
+app:
+  name: "resource_aware_image_encryption"
+  version: "0.2.0"
+  log_level: "INFO"
+
+image:
+  block_size: 16
+  channels: 3
+
+budget:
+  default_time: 1000.0
+
+encryption:
+  master_key: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  levels:
+    high:
+      algorithm: "AES-GCM"
+      chaos_rounds: 2
+    medium:
+      algorithm: "ChaCha20-Poly1305"
+      chaos_rounds: 1
+    low:
+      algorithm: "None"
+      chaos_rounds: 1
+
+policy:
+  scorer: "semantic_fusion"
+  rule_mode: "entropy"
+  thresholds: [0.3, 0.7]
+  semantic_alpha: 0.8
+  semantic_beta: 0.2
+  semantic:
+    semantic_mode: "dinov2"
+    model_name: "facebook/dinov2-small"
+    model_path: ""
+    model_path_env: "DINOv2_MODEL_PATH"
+    backend: "huggingface"
+    require_real_backend: false
+    alpha: 0.8
+    beta: 0.2
+    device: "auto"
+    use_pretrained: true
+    fallback_enabled: true
+    batch_size: 16
+    contrast_weight: 0.8
+    norm_weight: 0.2
+
+chaos:
+  seed: 0.123
+  r: 3.99

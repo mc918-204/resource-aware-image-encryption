@@ -1,0 +1,44 @@
+app:
+  name: "resource_aware_image_encryption"
+  version: "0.2.0"
+  log_level: "INFO"
+
+image:
+  block_size: 16
+  channels: 3
+
+budget:
+  default_time: 1000.0
+
+encryption:
+  master_key: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  levels:
+    high:
+      algorithm: "AES-GCM"
+      chaos_rounds: 2
+    medium:
+      algorithm: "ChaCha20-Poly1305"
+      chaos_rounds: 1
+    low:
+      algorithm: "None"
+      chaos_rounds: 1
+
+policy:
+  scorer: "cnn_classifier"
+  thresholds: [0.3, 0.7]
+  # Backward compatible field name
+  model_path: ""
+  # CNN-specific fields
+  model_type: "cnn_classifier"
+  input_channels: 3
+  num_classes: 3
+  class_names: ["low", "medium", "high"]
+  output_dim: 1
+  checkpoint_path: "results/checkpoints/cnn_classifier_best.pt"   # Preferred checkpoint
+  fallback_checkpoint: "results/checkpoints/cnn_classifier.pt"    # Fallback checkpoint
+  use_pretrained: true 
+  device: "auto"
+
+chaos:
+  seed: 0.123
+  r: 3.99

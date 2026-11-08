@@ -1,0 +1,77 @@
+datasets:
+  - name: kodak
+    root: /path/to/kodak
+    split: test
+    source: "http://r0k.us/graphics/kodak/"
+    license_note: "Public domain"
+    category_mapping:
+      default: natural
+    publication_ready: false
+    notes: "Replace root with actual path. Set publication_ready=true after validation."
+
+  - name: usc_sipi
+    root: /path/to/usc-sipi
+    split: test
+    source: "https://sipi.usc.edu/database/"
+    license_note: "Academic use only"
+    category_mapping:
+      aerial: aerial
+      textures: texture
+      misc: misc
+    publication_ready: false
+    notes: "Replace root with actual path. Set publication_ready=true after validation."
+
+  - name: bossbase
+    root: /path/to/BossBase
+    split: test
+    source: "http://boss.greyc.fr/"
+    license_note: "Research use"
+    category_mapping:
+      default: natural
+    publication_ready: false
+    notes: "512x512 grayscale images. Replace root with actual path."
+
+  - name: bows2
+    root: /path/to/BOWS2
+    split: test
+    source: "http://bows2.ec-lille.fr/"
+    license_note: "Research use"
+    category_mapping:
+      default: natural
+    publication_ready: false
+    notes: "512x512 grayscale images. Replace root with actual path."
+
+  - name: div2k
+    root: /path/to/DIV2K
+    split: test
+    source: "https://data.vision.ee.ethz.ch/cvl/DIV2K/"
+    license_note: "Academic use"
+    category_mapping:
+      default: natural
+    publication_ready: false
+    notes: "High-resolution images. Replace root with actual path."
+
+  - name: coco_subset
+    root: /path/to/coco
+    split: test
+    source: "https://cocodataset.org/"
+    license_note: "CC BY 4.0"
+    category_mapping:
+      person: privacy_sensitive
+      face: privacy_sensitive
+      document: privacy_sensitive
+      default: natural
+    publication_ready: false
+    notes: "Curated subset for privacy experiments. Replace root with actual path."
+
+  - name: data_train_debug
+    root: data/train
+    split: train
+    source: "local"
+    license_note: "Development only"
+    category_mapping:
+      face: face
+      animal: animal
+      natural: natural
+    publication_ready: false
+    notes: "DEBUG ONLY - NOT for publication. This is the current development dataset."

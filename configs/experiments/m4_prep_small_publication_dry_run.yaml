@@ -1,0 +1,47 @@
+experiment_name: "m4_prep_small_publication_dry_run"
+stage: "m4_prep"
+output_root: "results/m4_prep_runs"
+
+# Dataset: try publication first, fall back to validation_real_small, then debug
+dataset_manifest: "outputs/validation_subset_manifest/manifest.csv"
+max_images_per_category: 2
+
+budget_type: "time"
+budgets:
+  - budget_ratio: 0.05
+  - budget_ratio: 0.1
+  - budget_ratio: 0.2
+  - budget_ratio: 0.3
+
+seeds: [0, 1, 2]
+
+# Methods from m4_matrix_final.yaml; blocked methods will be skipped with blocker_reason
+methods:
+  - "no_protection"
+  - "full_aead"
+  - "random_selective"
+  - "rule_based_legacy"
+  - "entropy_texture_selective_external"
+  - "saliency_roi_selective_external"
+  - "proposed_semantic_real_threshold"
+  - "semantic_fallback"
+  - "proposed_semantic_fallback_threshold"
+  - "semantic_real"
+
+require_real_semantic: false
+config_path: "configs/q2_base.yaml"
+
+policy_overrides:
+  scorer: "rule_based"
+
+selective_metric_config:
+  topk: 5
+  strong_levels: ["high"]
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.25
+    none: 0.0
+
+attack_metrics_enabled: true
+statistical_validation_enabled: true

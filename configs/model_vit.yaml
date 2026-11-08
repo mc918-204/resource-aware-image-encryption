@@ -1,0 +1,46 @@
+# ViT Scorer Configuration
+# ------------------------
+
+app:
+  name: "resource_aware_image_encryption"
+  version: "1.0"
+
+image:
+  block_size: 16
+  channels: 3
+
+policy:
+  # Scorer mode: vit or fusion_vit
+  scorer: "fusion_vit"
+  
+  # ViT model settings
+  vit_model_name: "vit_small_patch16_224"
+  use_pretrained: true
+  device: "auto"
+  
+  # Fusion settings (only for fusion_vit mode)
+  fusion_alpha: 0.7  # 0.7 rule-based, 0.3 ViT
+
+encryption:
+  master_key: "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+  levels:
+    high:
+      algorithm: "AES-GCM"
+      key_size: 32
+      chaos_rounds: 3
+    medium:
+      algorithm: "ChaCha20-Poly1305"
+      key_size: 32
+      chaos_rounds: 2
+    low:
+      algorithm: "Chaos"
+      key_size: 0
+      chaos_rounds: 1
+
+chaos:
+  seed: 0.123
+  r: 3.99
+
+budget:
+  default_time: 2000.0  # ms
+  default_key: 100.0

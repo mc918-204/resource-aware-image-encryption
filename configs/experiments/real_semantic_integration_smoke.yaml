@@ -1,0 +1,24 @@
+app:
+  name: "resource_aware_image_encryption"
+  version: "0.2.0"
+
+smoke_test:
+  dinov2_readiness_path: "results/readiness/dinov2_ready.json"
+  output_dir: "results/real_semantic_smoke_runs"
+  
+  methods:
+    - name: "semantic_real"
+      enabled: true
+    - name: "proposed_semantic_real_threshold"
+      enabled: true
+
+  test_params:
+    categories: ["natural"]
+    images_per_category: 1
+    budgets: [0.1]
+    seeds: [0]
+    max_images: 1
+
+  requirements:
+    require_real_backend: true
+    require_tested_inference: true

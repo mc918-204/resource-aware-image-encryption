@@ -1,0 +1,12 @@
+datasets:
+  - name: data_train_debug
+    root: data/train
+    split: train
+    source: "local"
+    license_note: "Development only"
+    category_mapping:
+      face: face
+      animal: animal
+      natural: natural
+    publication_ready: false
+    notes: "DEBUG ONLY - This is the current development dataset. Must NOT pass publication validation."

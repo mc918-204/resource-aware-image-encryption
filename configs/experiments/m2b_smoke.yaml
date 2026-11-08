@@ -1,0 +1,29 @@
+experiment_name: m2b_smoke_benchmark
+experiment_stage: m2b_smoke
+dataset_manifest: results/manifests/debug_train_manifest.csv
+budget_ratios:
+  - 0.1
+  - 0.2
+budget_type: time
+seeds:
+  - 0
+  - 1
+methods:
+  - no_protection
+  - full_aead
+  - random_selective
+  - rule_based_legacy
+  - semantic_fallback
+  - proposed_semantic_fallback_threshold
+max_images_per_category: 2
+output_root: results/m2b_smoke_runs
+config_path: configs/q2_base.yaml
+selective_metric_config:
+  topk: 5
+  strong_levels:
+    - high
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.25
+    none: 0.0

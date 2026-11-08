@@ -1,0 +1,25 @@
+references:
+  - no_protection
+  - full_aead
+
+main_baselines:
+  - random_selective
+  - rule_based_legacy
+  - entropy_texture_selective_external
+  - saliency_roi_selective_external
+
+proposed:
+  - proposed_semantic_real_threshold
+
+ablation:
+  - semantic_fallback
+  - proposed_semantic_fallback_threshold
+  - semantic_real
+
+diagnostics_only:
+  - selective_roi_aes
+  - lightweight_hybrid
+  - logistic_arnold
+  - hyperbolic_pde
+  - compressive_sensing_chaos
+  - gan_based

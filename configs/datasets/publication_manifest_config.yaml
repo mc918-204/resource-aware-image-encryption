@@ -1,0 +1,64 @@
+app:
+  name: "resource_aware_image_encryption"
+  version: "0.2.0"
+
+publication:
+  base_dir: "data/publication"
+  datasets:
+    kodak:
+      path: "kodak"
+      category: "natural"
+      split: "test"
+      source: "Eastman Kodak"
+      license_note: "Public domain / research use"
+    usc_sipi:
+      path: "usc_sipi"
+      category: "natural"
+      split: "test"
+      source: "USC SIPI"
+      license_note: "Public domain / research use"
+    bossbase:
+      path: "bossbase"
+      category: "natural"
+      split: "test"
+      source: "BOSS Competition"
+      license_note: "Research use only"
+    bows2:
+      path: "bows2"
+      category: "natural"
+      split: "test"
+      source: "BOWS-2 Competition"
+      license_note: "Research use only"
+    div2k:
+      path: "div2k"
+      category: "natural"
+      split: "test"
+      source: "NTIRE 2017"
+      license_note: "CC BY-NC 4.0"
+    coco_subset:
+      path: "coco_subset"
+      category: "mixed"
+      split: "test"
+      source: "MS COCO"
+      license_note: "Various / check individual licenses"
+    privacy_subset:
+      path: "privacy_subset"
+      category: "sensitive"
+      split: "test"
+      source: "Custom curated"
+      license_note: "Research use only"
+
+  supported_extensions:
+    - ".jpg"
+    - ".jpeg"
+    - ".png"
+    - ".bmp"
+    - ".tiff"
+    - ".tif"
+
+  min_images_for_ready: 10
+  min_datasets_for_ready: 2
+
+output:
+  manifest_csv: "results/manifests/publication_manifest.csv"
+  summary_json: "results/audits/publication_manifest_summary.json"

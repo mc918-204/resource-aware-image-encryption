@@ -1,0 +1,160 @@
+app:
+  name: "resource_aware_image_encryption"
+  version: "0.2.0"
+  log_level: "INFO"
+
+image:
+  block_size: 16
+  channels: 3
+
+budget:
+  default_time: 1000.0
+
+encryption:
+  master_key: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  fail_closed: true
+  levels:
+    high:
+      algorithm: "AES-GCM"
+      chaos_rounds: 2
+    medium:
+      algorithm: "ChaCha20-Poly1305"
+      chaos_rounds: 1
+    low:
+      algorithm: "None"
+      chaos_rounds: 1
+
+policy:
+  scorer: "rule_based"
+  rule_mode: "entropy"
+  thresholds: [0.3, 0.7]
+  model_path: "results/checkpoints/cnn_classifier_best.pt"
+
+chaos:
+  backend: "logistic"
+  seed: 0.123
+  r: 3.99
+
+research:
+  labels:
+    artifact_version: "external_sensitive_labels_v2"
+    required_for_full: true
+    protected_levels: [high, medium]
+    overlap_threshold: 0.5
+    mapping_version: "region_overlap_v1"
+    active_profile: "manual_review"
+    profiles:
+      manual_review:
+        mode: "manual_review"
+        label_source: "reviewed_privacy_regions_v1"
+        source_dataset: "publication_manifest_manual_review"
+        source_version: "2026-07-15"
+        license_note: "source licenses recorded in dataset manifest"
+        repeat_review_fraction: 0.1
+        review_seed: 20260715
+      openimages_privacy_v1:
+        mode: "official_openimages"
+        label_source: "open_images_v7_official_box"
+        source_dataset: "openimages_privacy_v1"
+        source_version: "Open Images V7"
+        license_note: "Open Images annotations CC BY 4.0; original image licenses recorded per image"
+        selection_seed: 20260715
+        classes:
+          Human face: "face"
+          Vehicle registration plate: "license_plate"
+        split_quotas:
+          train:
+            Human face: 720
+            Vehicle registration plate: 720
+          validation:
+            Human face: 240
+            Vehicle registration plate: 240
+          test:
+            Human face: 240
+            Vehicle registration plate: 240
+        excluded_box_flags: [IsGroupOf, IsDepiction]
+        proxy_url: "http://127.0.0.1:10808"
+        dataset_dir: "data/publication/openimages_privacy_v1"
+        manifest_path: "results/manifests/openimages_privacy_v1_manifest.csv"
+        split_artifact_path: "results/manifests/openimages_privacy_v1_split.json"
+        label_artifact_path: "results/labels/openimages_privacy_external_labels_v2.json"
+        label_audit_path: "results/labels/openimages_privacy_external_labels_v2.audit.json"
+  split:
+    artifact_version: "v3_image_split_v1"
+    seed: 20260715
+    validation_fraction: 0.2
+    test_fraction: 0.2
+    stratify_field: "dataset_name"
+  spatial_signals:
+    artifact_version: "v3_spatial_signals_v1"
+    model_name: "hustvl/yolos-tiny"
+    revision: "main"
+    local_path: null
+    cache_dir: null
+    threshold: 0.5
+    device: "auto"
+    context_margin_px: 8
+    boundary_width_px: 4
+    seed: 20260715
+    accepted_licenses:
+      - "apache-2.0"
+      - "mit"
+      - "bsd-2-clause"
+      - "bsd-3-clause"
+      - "cc-by-4.0"
+    label_priors:
+      person: 1.0
+      cell phone: 0.9
+      laptop: 0.8
+      car: 0.7
+      motorcycle: 0.7
+      bus: 0.7
+      truck: 0.7
+      train: 0.6
+      tv: 0.6
+      handbag: 0.6
+      suitcase: 0.6
+      backpack: 0.5
+  scorer:
+    weights:
+      rule: 0.2
+      semantic: 0.2
+      object: 0.2
+      boundary: 0.1
+      context: 0.2
+      uncertainty: 0.1
+    uncertainty_direction: "protect_more"
+  allocator:
+    allowed_levels: [none, medium, high]
+    protection_utility:
+      none: 0.0
+      medium: 0.6
+      high: 1.0
+    budget_scale: 1000
+    minimum_level: none
+  container:
+    modes:
+      - public_variable_manifest
+      - encrypted_manifest
+      - fixed_record
+      - padded_container
+    fixed_record_size_bytes: 4096
+    padding_bucket_size_bytes: 65536
+  attacks:
+    methods: [reconstruction, roi_detection, mine, metadata]
+    require_image_disjoint_split: true
+  mobile:
+    phases: [cold, first, warm]
+    repetitions: 30
+    randomization_seed: 20260715
+  joint:
+    required_conditions: []
+
+experiment:
+  status_values: [DEGRADED, PARTIAL, FULL]
+  seeds: [20260715, 20260716, 20260717]
+  artifacts:
+    root: "results/v3_runs"
+    dataset_manifest: "results/manifests/publication_manifest.csv"
+    split_manifest: "results/manifests/v3_image_split_v1.json"
+    label_artifact: "results/labels/external_sensitive_labels_v2.json"

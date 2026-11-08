@@ -1,0 +1,15 @@
+dataset_name: tifs_candidate_bundle
+dataset_root: data/publication_pending
+split: publication
+source: pending_curated_public_datasets
+license_note: verify_each_component_dataset_license_before_use
+is_publication_ready: false
+exclusion_reason: publication_dataset_not_prepared_yet
+recommended_components:
+  - USC-SIPI
+  - Kodak
+  - BOSSBase
+  - BOWS2
+  - DIV2K
+  - COCO_subset
+  - privacy_sensitive_subset

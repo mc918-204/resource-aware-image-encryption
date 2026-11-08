@@ -1,0 +1,35 @@
+experiment_name: "m4_prep_minimal_dry_run"
+stage: "m4_prep"
+output_root: "results/m4_prep_runs"
+
+dataset_manifest: "outputs/validation_subset_manifest/manifest.csv"
+max_images_per_category: 1
+
+budget_type: "time"
+budgets:
+  - budget_ratio: 0.1
+
+seeds: [0]
+
+methods:
+  - "no_protection"
+  - "full_aead"
+  - "rule_based_legacy"
+
+require_real_semantic: false
+config_path: "configs/q2_base.yaml"
+
+policy_overrides:
+  scorer: "rule_based"
+
+selective_metric_config:
+  topk: 5
+  strong_levels: ["high"]
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.25
+    none: 0.0
+
+attack_metrics_enabled: false
+statistical_validation_enabled: false

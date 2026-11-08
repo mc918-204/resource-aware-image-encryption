@@ -1,0 +1,47 @@
+# Attack/Leakage experiment configuration template.
+# This is a DESIGN-ONLY template. No actual detectors are configured yet.
+# Enable attacks in M3/M4 when detectors are available.
+
+attack_leakage:
+  enabled: false
+  schema_version: "attack_v1"
+
+  attacks:
+    - name: face_detection_leakage
+      enabled: false
+      detector_name: "mtcnn"
+      detector_version: "0.1.1"
+      attacker_knowledge: "black_box"
+      notes: "Requires mtcnn package. Not implemented yet."
+
+    - name: object_detection_leakage
+      enabled: false
+      detector_name: "yolov8"
+      detector_version: "8.0.0"
+      attacker_knowledge: "black_box"
+      notes: "Requires ultralytics package. Not implemented yet."
+
+    - name: ocr_leakage
+      enabled: false
+      detector_name: "tesseract"
+      detector_version: "5.0"
+      attacker_knowledge: "black_box"
+      notes: "Requires pytesseract package. Not implemented yet."
+
+    - name: reconstruction_leakage
+      enabled: false
+      detector_name: "inpainting"
+      detector_version: "N/A"
+      attacker_knowledge: "black_box"
+      notes: "Requires inpainting model. Not implemented yet."
+
+    - name: known_algorithm_budget_attack
+      enabled: false
+      detector_name: "N/A"
+      detector_version: "N/A"
+      attacker_knowledge: "budget_aware"
+      notes: "Analytical attack based on budget analysis. Not implemented yet."
+
+  output:
+    csv_path: "results/attack_results.csv"
+    summary_path: "results/attack_summary.json"

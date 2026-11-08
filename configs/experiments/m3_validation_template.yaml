@@ -1,0 +1,100 @@
+# M3 Validation Benchmark Configuration Template
+# This is a TEMPLATE for M3 validation experiments.
+# Replace dataset_manifest paths with actual publication dataset manifests.
+# Do NOT run large experiments yet. This is for validation only.
+
+experiment:
+  name: "m3_validation"
+  description: "Small-scale validation benchmark for M3. Not final TIFS experiments."
+  schema_version: "m2a_v1"
+  max_images_per_category: 5
+  seeds: [0, 1, 2]
+
+dataset_manifest:
+  # Replace with actual publication dataset manifest path
+  # Example: configs/datasets/publication_template.yaml
+  path: "configs/datasets/validation_template.yaml"
+  categories:
+    - name: face
+      max_images: 5
+    - name: animal
+      max_images: 5
+    - name: natural
+      max_images: 5
+
+methods:
+  - name: no_protection
+    family: "no_protection"
+    comparison_role: "lower_bound_reference"
+    allowed_table: "references"
+    enabled: true
+
+  - name: full_aead
+    family: "full_encryption_reference"
+    comparison_role: "full_encryption_reference"
+    allowed_table: "references"
+    enabled: true
+
+  - name: random_selective
+    family: "random_selective"
+    comparison_role: "baseline"
+    allowed_table: "main"
+    enabled: true
+
+  - name: rule_based_legacy
+    family: "rule_based"
+    comparison_role: "baseline"
+    allowed_table: "main"
+    enabled: true
+
+  - name: semantic_real
+    family: "semantic_selective"
+    comparison_role: "proposed"
+    allowed_table: "main"
+    enabled: false
+    notes: "Enable only when DINOv2 readiness check passes."
+
+  - name: proposed_semantic
+    family: "semantic_selective"
+    comparison_role: "proposed"
+    allowed_table: "main"
+    enabled: false
+    notes: "Enable only when real semantic backend is available."
+
+budgets:
+  - budget_ratio: 0.05
+  - budget_ratio: 0.1
+  - budget_ratio: 0.2
+  - budget_ratio: 0.3
+
+metrics:
+  traditional:
+    - entropy
+    - psnr
+    - ssim
+    - adjacent_correlation_horizontal
+    - adjacent_correlation_vertical
+    - adjacent_correlation_diagonal
+  selective:
+    - semantic_exposure_rate
+    - topk_sensitive_exposure
+    - budget_normalized_protection_gain
+    - oracle_gap
+    - utility
+    - utility_per_cost
+    - protection_density
+  not_applicable:
+    - npcr
+    - uaci
+  not_applicable_notes: "NPCR/UACI are not applicable to selective encryption protocol."
+
+attack_metrics:
+  enabled: false
+  notes: "Attack metrics are optional and disabled by default. Enable in M4."
+
+export:
+  tables:
+    - main
+    - references
+    - ablation
+  output_dir: "results/m3_validation"

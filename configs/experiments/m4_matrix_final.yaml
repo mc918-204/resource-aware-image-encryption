@@ -1,0 +1,153 @@
+references:
+  no_protection:
+    allowed_table: references
+    comparison_role: reference
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+  full_aead:
+    allowed_table: references
+    comparison_role: reference
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: false
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+
+main_baselines:
+  random_selective:
+    allowed_table: main
+    comparison_role: main_baseline
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+  rule_based_legacy:
+    allowed_table: main
+    comparison_role: main_baseline
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+  entropy_texture_selective_external:
+    allowed_table: main
+    comparison_role: main_baseline
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+  saliency_roi_selective_external:
+    allowed_table: main
+    comparison_role: main_baseline
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+
+proposed:
+  proposed_semantic_real_threshold:
+    allowed_table: proposed
+    comparison_role: proposed
+    requires_real_semantic: true
+    requires_publication_dataset: true
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+
+ablation:
+  semantic_fallback:
+    allowed_table: ablation
+    comparison_role: ablation
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+  proposed_semantic_fallback_threshold:
+    allowed_table: ablation
+    comparison_role: ablation
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+  semantic_real:
+    allowed_table: ablation
+    comparison_role: semantic_baseline
+    requires_real_semantic: true
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: true
+    publication_ready_status: ready
+    blocker_reason: ""
+
+diagnostics_only:
+  selective_roi_aes:
+    allowed_table: diagnostics
+    comparison_role: diagnostics_only
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: false
+    publication_ready_status: excluded
+    blocker_reason: "diagnostics_only; excluded from final main/proposed/ablation tables"
+  lightweight_hybrid:
+    allowed_table: diagnostics
+    comparison_role: diagnostics_only
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: false
+    publication_ready_status: excluded
+    blocker_reason: "diagnostics_only; excluded from final main/proposed/ablation tables"
+  logistic_arnold:
+    allowed_table: diagnostics
+    comparison_role: diagnostics_only
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: false
+    publication_ready_status: excluded
+    blocker_reason: "diagnostics_only; excluded from final main/proposed/ablation tables"
+  hyperbolic_pde:
+    allowed_table: diagnostics
+    comparison_role: diagnostics_only
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: false
+    publication_ready_status: excluded
+    blocker_reason: "diagnostics_only; excluded from final main/proposed/ablation tables"
+  compressive_sensing_chaos:
+    allowed_table: diagnostics
+    comparison_role: diagnostics_only
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: false
+    publication_ready_status: excluded
+    blocker_reason: "diagnostics_only; excluded from final main/proposed/ablation tables"
+  gan_based:
+    allowed_table: diagnostics
+    comparison_role: diagnostics_only
+    requires_real_semantic: false
+    requires_publication_dataset: false
+    supports_budget_ratio: true
+    supports_attack_metrics: false
+    publication_ready_status: excluded
+    blocker_reason: "diagnostics_only; excluded from final main/proposed/ablation tables"

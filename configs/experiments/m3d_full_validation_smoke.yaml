@@ -1,0 +1,42 @@
+experiment_name: "m3d_full_validation_smoke"
+stage: "validation"
+output_root: "outputs/m3d_validation_smoke"
+dataset_manifest: "outputs/validation_subset_manifest/manifest.csv"
+max_images_per_category: 1
+
+budget_type: "time"
+budgets:
+  - budget_ratio: 0.05
+  - budget_ratio: 0.1
+  - budget_ratio: 0.2
+
+seeds: [0, 1, 2]
+
+methods:
+  - "no_protection"
+  - "full_aead"
+  - "random_selective"
+  - "rule_based_legacy"
+  - "entropy_texture_selective_external"
+  - "saliency_roi_selective_external"
+  - "semantic_fallback"
+  - "proposed_semantic_fallback_threshold"
+  - "semantic_real"
+  - "proposed_semantic_real_threshold"
+
+require_real_semantic: false
+config_path: "configs/q2_base.yaml"
+
+policy_overrides:
+  scorer: "rule_based"
+
+selective_metric_config:
+  topk: 5
+  strong_levels: ["high"]
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.25
+    none: 0.0
+
+attack_metrics_enabled: true

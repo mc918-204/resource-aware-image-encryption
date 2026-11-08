@@ -1,0 +1,33 @@
+experiment_name: "m3c_validation_smoke"
+stage: "validation"
+output_root: "outputs/m3c_validation_smoke"
+dataset_manifest: "outputs/validation_subset_manifest"
+max_images_per_category: 2
+
+budget_type: "time"
+budgets:
+  - budget_ratio: 0.15
+  - budget_ratio: 0.35
+
+seeds: [0, 1]
+
+methods:
+  - "rule_based_legacy"
+  - "random_selective"
+  - "entropy_texture_selective_external"
+  - "saliency_roi_selective_external"
+
+require_real_semantic: false
+config_path: "configs/q2_base.yaml"
+
+policy_overrides:
+  scorer: "rule_based"
+
+selective_metric_config:
+  topk: 5
+  strong_levels: ["high"]
+  protection_weights:
+    high: 1.0
+    medium: 0.5
+    low: 0.25
+    none: 0.0
